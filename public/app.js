@@ -17,6 +17,33 @@ const clearBtn = document.getElementById('clear-btn');
 let pollTimer = null;
 let currentJobId = null;
 
+const apiBase = (() => {
+  const bodyBase = document.body?.dataset?.apiBase || '';
+  const globalBase = window.MP3_TUBER_API_BASE || '';
+  const raw = `${bodyBase || globalBase}`.trim();
+  if (!raw) return '';
+  return raw.endsWith('/') ? raw.slice(0, -1) : raw;
+})();
+
+function apiUrl(path) {
+  if (/^https?:\/\//i.test(path)) {
+    return path;
+  }
+  return `${apiBase}${path}`;
+}
+
+async function readJsonResponse(response) {
+  const text = await response.text();
+  if (!text) {
+    return {};
+  }
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    throw new Error('Server returned an unexpected response. Is the backend running?');
+  }
+}
+
 function setStatus({ label, percent, message }) {
   if (label) statusLabel.textContent = label;
   if (typeof percent === 'number') {
@@ -58,22 +85,25 @@ function clearPolling() {
 
 async function loadDiagnostics() {
   try {
-    const response = await fetch('/api/diagnostics');
-    const data = await response.json();
+    const response = await fetch(apiUrl('/api/diagnostics'));
+    const data = await readJsonResponse(response);
+    if (!response.ok) {
+      throw new Error(data.error || 'Unable to read diagnostics.');
+    }
     if (!data.ok) {
       setDiagnostics(`Server missing: ${data.missing.join(', ')}. Install dependencies to enable conversions.`);
     } else {
       setDiagnostics('');
     }
   } catch (error) {
-    setDiagnostics('Unable to reach the server diagnostics.');
+    setDiagnostics('Unable to reach the server diagnostics. Ensure the backend is deployed and reachable.');
   }
 }
 
 async function pollStatus(jobId) {
   try {
-    const response = await fetch(`/api/status/${jobId}`);
-    const data = await response.json();
+    const response = await fetch(apiUrl(`/api/status/${jobId}`));
+    const data = await readJsonResponse(response);
     if (!response.ok) {
       throw new Error(data.error || 'Unable to read status.');
     }
@@ -87,7 +117,7 @@ async function pollStatus(jobId) {
     if (data.status === 'finished') {
       clearPolling();
       disableForm(false);
-      downloadLink.href = data.downloadUrl;
+      downloadLink.href = data.downloadUrl ? apiUrl(data.downloadUrl) : '#';
       downloadLink.textContent = 'Download MP3';
       resultMeta.textContent = data.fileName ? `File: ${data.fileName}` : 'Your MP3 is ready.';
       setResultVisible(true);
@@ -127,13 +157,13 @@ form.addEventListener('submit', async (event) => {
   setStatus({ label: 'Starting', percent: 5, message: 'Sending your link to the converter.' });
 
   try {
-    const response = await fetch('/api/convert', {
+    const response = await fetch(apiUrl('/api/convert'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url, rightsConfirmed: true })
     });
 
-    const data = await response.json();
+    const data = await readJsonResponse(response);
     if (!response.ok) {
       throw new Error(data.error || 'Unable to start conversion.');
     }

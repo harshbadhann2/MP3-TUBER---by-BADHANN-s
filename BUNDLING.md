@@ -1,19 +1,14 @@
-# Bundling for a lightweight GitHub repo
+# Bundling (Optional)
 
-If you want to upload a repo without the `node_modules` folder, create a single bundled server file and commit that instead.
+This project is already lightweight and does **not** require bundling because it has zero npm dependencies.
 
-1. Build the bundle (on your development machine):
+If you still want a single bundled server file, you can use `ncc`:
 
 ```bash
 npx @vercel/ncc build server.js -o dist
-```
-
-2. Run the bundle on the target machine (Node must be installed):
-
-```bash
 node dist/index.js
 ```
 
 Notes:
-- `yt-dlp` and `ffmpeg` still need to be present on the host.
-- `.gitignore` excludes `node_modules/` and `/dist` by default; remove `/dist` from `.gitignore` if you want to commit the bundle.
+- `yt-dlp` and `ffmpeg` must still be installed on the host.
+- `/dist` is ignored by default in `.gitignore`.
