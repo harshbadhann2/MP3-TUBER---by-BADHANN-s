@@ -5,6 +5,8 @@ const fs = require('fs');
 const crypto = require('crypto');
 
 const port = process.env.PORT || 3000;
+const extraPaths = ['/usr/local/bin', '/opt/homebrew/bin', '/home/linuxbrew/.linuxbrew/bin'];
+process.env.PATH = `${extraPaths.join(':')}:${process.env.PATH || ''}`;
 const publicDir = path.join(process.cwd(), 'public');
 const downloadsDir = path.join(process.cwd(), 'downloads');
 const maxBodySize = 1024 * 1024; // 1 MB

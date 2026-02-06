@@ -69,11 +69,10 @@ http://localhost:3000
 
 ### Render (recommended)
 
-This repo includes `render.yaml` so the backend installs `ffmpeg` + `yt-dlp` automatically.
+This repo installs `ffmpeg` + `yt-dlp` automatically on Render.
 
 1. Create a **Render Web Service** from this GitHub repo  
-2. Render will auto-detect `render.yaml`  
-3. Click **Deploy**  
+2. Click **Deploy**  
 
 ### Static hosting + separate backend
 

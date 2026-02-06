@@ -6,7 +6,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "postinstall": "sh scripts/install-deps.sh"
   },
   "engines": {
     "node": ">=18"
