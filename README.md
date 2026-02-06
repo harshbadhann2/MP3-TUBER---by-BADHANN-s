@@ -67,15 +67,13 @@ http://localhost:3000
 
 ## 🚢 Deployment
 
-### Recommended (single-server)
+### Render (recommended)
 
-Deploy to any Node host (Render, Railway, Fly, VPS, etc.) and run:
+This repo includes `render.yaml` so the backend installs `ffmpeg` + `yt-dlp` automatically.
 
-```
-node server.js
-```
-
-This serves **both** the UI and the API from one place.
+1. Create a **Render Web Service** from this GitHub repo  
+2. Render will auto-detect `render.yaml`  
+3. Click **Deploy**  
 
 ### Static hosting + separate backend
 
