@@ -18,8 +18,10 @@ if [ "$HAVE_FFMPEG" -eq 1 ] && [ "$HAVE_YTDLP" -eq 1 ]; then
 fi
 
 if command -v apt-get >/dev/null 2>&1; then
-  apt-get update
-  apt-get install -y ffmpeg curl
+  APT_TMP=/tmp/apt
+  mkdir -p "$APT_TMP/lists" "$APT_TMP/cache"
+  apt-get -o Dir::State::lists="$APT_TMP/lists" -o Dir::Cache::archives="$APT_TMP/cache" update
+  apt-get -o Dir::State::lists="$APT_TMP/lists" -o Dir::Cache::archives="$APT_TMP/cache" install -y ffmpeg curl
 
   if ! command -v yt-dlp >/dev/null 2>&1; then
     curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
